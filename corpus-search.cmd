@@ -14,8 +14,8 @@ goto :eof
   echo sstring=%sstring%
   echo nosp=%nosp%
   echo target=%target%
-  copy /y source\%target%-corpus.xml source\corpus.xml
-  set source=%cd%\source\corpus.xml
+  rem copy /y source\%target%-corpus.xml source\corpus.xml
+  set source=%cd%\source\%target%-corpus.xml
   set search=tmp\search.xml
   set info2=on
   set reset=[0m
@@ -30,9 +30,8 @@ goto :eof
   if exist %htmlfile% del %htmlfile%
   rem end setup
   call :searchpresent %stype%
-  if exist %htmlfile% 
-  (
-  %green%Created: %htmlfile% %reset%
+  if exist %htmlfile% (
+  echo %green%Created: %htmlfile% %reset%
   start %htmlfile%
   )
   if '%errorlevel%' == 1 pause
@@ -46,7 +45,7 @@ goto :eof
 goto :eof
 
 :searchpresent
-  echo %cyan%call :xslt search-present-target3.xslt %source% %htmlfile% "type=%stype% searchword='%sstring%' nosp=%nosp% target='%target%' output=%output%"%reset%
+  rem echo %cyan%call :xslt search-present-target3.xslt %source% %htmlfile% "type=%stype% searchword='%sstring%' nosp=%nosp% target='%target%' output=%output%"%reset%
   @call :xslt search-present-corpus.xslt %source% %htmlfile% "type=%stype% searchword='%sstring%' nosp=%nosp% target='%target%' output=%output%"
 goto :eof
 
@@ -65,7 +64,7 @@ goto :eof
   set params=%~4
   if not exist %infile% echo "infile not found!" & exit /b
   if defined params set params=%params:'="%
-    @if defined info2 echo %cyan%%java% -jar "%saxon%" -o:"%outfile%" "%infile%" "%script%" %params%%reset%
+    @if defined info2 echo %cyan%%java% -jar "%saxon%" -o:%outfile% "%infile%" "%script%" %params%%reset%
     %java% -Xmx1024m  %suppressXsltNamespaceCheck% -jar "%saxon%" -o:"%outfile%" "%infile%" "%script%" %params%
   rem if exit %outfile% echo Info: Created %outfile%
 goto :eof
