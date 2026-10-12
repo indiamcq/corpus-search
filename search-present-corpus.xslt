@@ -5,17 +5,13 @@
     # Purpose:  	reformat for presentation.
     # Part of:  	Xrunner - https://github.com/SILAsiaPub/xrunner2
     # Author:   	Ian McQuay <ian_mcquay@sil.org>
-    # Created:  	2026-09-12
+    # Created:  	2026-09-12; 2026-10-06
     # Copyright:	(c) 2026 SIL International
     # Licence:  	<MIT>
     ################################################################ -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:f="myfunctions" exclude-result-prefixes="f">
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" name="xml"/>
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" suppress-indentation="h1 h2 h3 p li dd dt td th"/>
-    <!--  suppress-indentation="h1 h2 h3 p li dd dt td th"-->
-    <!-- <xsl:output method="text" encoding="utf-8" /> -->
-    <!-- <xsl:include href="project.xslt"/> -->
-    <!-- <xsl:param name="searchword"/> -->
     <xsl:param name="type"/>
     <xsl:param name="searchword"/>
     <xsl:param name="nosp"/>
@@ -28,14 +24,6 @@
     <xsl:variable name="wd2findcount" select="count($wd2find)"/>
     <xsl:variable name="found">
         <xsl:apply-templates select="/*/text"/>
-        <!-- <xsl:choose>
-            <xsl:when test="$target = 'every'">
-                <xsl:apply-templates select="//collection|//text"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates select="//collection[@group = $target]"/>
-            </xsl:otherwise>
-        </xsl:choose> -->
     </xsl:variable>
     <xsl:template match="/*">
         <html lang="en">
@@ -104,7 +92,7 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template match="text" mode="html">
-         <!-- <xsl:if test="count(p/r) &gt; 0 or count(p/l) &gt; 0"> -->
+        <!-- <xsl:if test="count(p/r) &gt; 0 or count(p/l) &gt; 0"> -->
         <xsl:if test="p/r or p/l">
             <xsl:element name="div">
                 <xsl:attribute name="class">
@@ -132,21 +120,21 @@
                 <xsl:value-of select="@n"/>
                 <xsl:text>: </xsl:text>
             </xsl:element>
-                    <xsl:choose>
-            <xsl:when test="contains(text(),$spacedsearchwordsulc)">
-                <xsl:value-of select="substring-before(text(), $spacedsearchwordsulc)"/>
-                <span>
-                    <xsl:attribute name="class">
-                        <xsl:text>hilite</xsl:text>
-                    </xsl:attribute>
-                    <xsl:value-of select="$spacedsearchwordsulc"/>
-                </span>
-                <xsl:sequence select="f:hilite(substring-after(text(), $spacedsearchwordsulc),$spacedsearchwordsulc)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="text()"/>
-            </xsl:otherwise>
-        </xsl:choose>
+            <xsl:choose>
+                <xsl:when test="contains(text(),$spacedsearchwordsulc)">
+                    <xsl:value-of select="substring-before(text(), $spacedsearchwordsulc)"/>
+                    <span>
+                        <xsl:attribute name="class">
+                            <xsl:text>hilite</xsl:text>
+                        </xsl:attribute>
+                        <xsl:value-of select="$spacedsearchwordsulc"/>
+                    </span>
+                    <xsl:sequence select="f:hilite(substring-after(text(), $spacedsearchwordsulc),$spacedsearchwordsulc)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="text()"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:element>
     </xsl:template>
     <!--     <xsl:function name="f:multifind">
