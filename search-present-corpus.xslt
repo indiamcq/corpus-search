@@ -16,7 +16,7 @@
     <xsl:param name="searchword"/>
     <xsl:param name="nosp"/>
     <xsl:param name="target"/>
-    <xsl:param name="output"/>
+     <!-- <xsl:param name="output"/> -->
     <xsl:variable name="spacedsearchwordsulc" select="translate($searchword,$nosp,' ')"/>
     <xsl:variable name="spacedsearchwords" select="lower-case(translate($searchword,$nosp,' '))"/>
     <xsl:variable name="regexsearchwords" select="translate($searchword,$nosp,' ')"/>
