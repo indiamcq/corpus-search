@@ -9,33 +9,40 @@ call :main
 goto :eof
 
 :main
- 
-  echo stype=%stype%
-  echo sstring=%sstring%
-  echo nosp=%nosp%
-  echo target=%target%
-  rem copy /y source\%target%-corpus.xml source\corpus.xml
-  set source=%cd%\source\%target%-corpus.xml
-  set search=tmp\search.xml
-  set info2=on
-  set reset=[0m
   set green=[32m
   set blue=[34m
   set cyan=[36m
+  set reset=[0m
+ 
+  echo %green%Search corpus:%reset% %target%
+  echo %green%Search string:%reset% %sstring%
+  echo %green%Search type:%reset% %stype% 
+  echo %green%Replace space:%reset% %nosp%
+  rem copy /y source\%target%-corpus.xml source\corpus.xml
+  set source=source\%target%-corpus.xml
+  set search=tmp\search.xml
+  set info2=on
   set safestring=%sstring:?=_%
-  set htmlfile=%cd%\output\%stype%-%target%-corpus-%safestring%.html
+  set htmlfile=output\%stype%-%target%-corpus-%safestring%.html
   set java=C:\programs\javafx\bin\java.exe
   set saxon=C:\programs\saxon\saxon12he.jar
   set timeout=60
   if exist %htmlfile% del %htmlfile%
   rem end setup
-  call :searchpresent %stype%
+  rem call :xslt3js
+  call :searchpresent
   if exist %htmlfile% (
   echo %green%Created: %htmlfile% %reset%
   start %htmlfile%
   )
-  if '%errorlevel%' == 1 pause
+  if '%errorlevel%' == '1' pause
   timeout 60
+goto :eof
+
+:xslt3js
+  set xslt3he=D:\BaptistArchive\SaxonJS-Tutorial-2021-main\node\node_modules\.bin\xslt3.cmd
+  @echo %cyan%%xslt3he% -xsl:search-present-corpus.sef.json -s:%source% -o:%htmlfile% type=%stype% searchword=%sstring% nosp=%nosp% target=%target% %reset%
+  @call %xslt3he% -xsl:search-present-corpus.sef.json -s:%source% -o:%htmlfile% type=%stype% searchword=%sstring% nosp=%nosp% target=%target%
 goto :eof
 
 :search0
@@ -48,6 +55,7 @@ goto :eof
   rem echo %cyan%call :xslt search-present-target3.xslt %source% %htmlfile% "type=%stype% searchword='%sstring%' nosp=%nosp% target='%target%' output=%output%"%reset%
   @call :xslt search-present-corpus.xslt %source% %htmlfile% "type=%stype% searchword='%sstring%' nosp=%nosp% target='%target%' output=%output%"
 goto :eof
+
 
 :xslt
 :: Description: Runs Java with saxon to process XSLT transformations.
