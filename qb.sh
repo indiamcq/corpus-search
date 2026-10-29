@@ -34,6 +34,10 @@ main() {
     sleep "$timeout_secs"
 }
 
+xsearchcorpus() {
+  java -jar ../saxon/saxon-he-12.x.jar -s:source/${corpus}-corpus.xml -xsl:search-present-corpus.xslt -o:"${htmlfile}"
+}
+
 searchcorpus() {
     echo -e "${blue}xslt3-he -xsl:search-present-target-js.sef.json -s:source/all-indexes.xml -o:${htmlfile} target=\"${grp}\" searchword=\"${sstring}\"${reset}"
 
