@@ -1,15 +1,17 @@
 
-Dim shell, dbName, objShell, nosp, java, saxon, htmlfile, source, maintab, target, width, height, htpx, wdpx, normhtproportion, normwdproportion, tskgrp, myTitle, curtitle
+Dim shell, dbName, objShell, nosp, java, saxon, htmlfile, source, maintab, target, width, height, htpx, wdpx, normhtproportion, normwdproportion, tskgrp, myTitle, curtitle, xhead, xtail, searchwords, stype
 
 tskgrp =  Array("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z")
  maintab = Array("main","pics","qbmag","every","files")
  Set objShell = CreateObject("Wscript.Shell")
- nosp = "~"
+ 'nosp = "~"
  java = "javafx\bin\java.exe"
  saxon = "saxon\saxon12he.jar"
  htmlpath = "output\"
- source = "source\all-indexes.xml"
- tabgrp = 4
+ 'source = "source\all-indexes.xml"
+ 'tabgrp = 4
+ xhead = "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>"
+ xtail = "</xsl:stylesheet>"
 ' Calculate pixels based on screen resolution
 width = screen.availWidth
 height = screen.availHeight
@@ -50,13 +52,25 @@ Function GetRadioValue(radioGroup)
 End Function
 
 Sub FindString()
-	Dim searchString, selectedValue, selectedOutput, selectedType
-	searchString = Replace(document.getElementById("stringSearch").value," ",nosp)
-	selectedLet = GetRadioValue(document.myGroup.group)
-	selectedValue = ReadIni("search.ini","filter",selectedLet)
+	Dim searchString, searchStringSafe, selectedCorpus, selectedType, xmlString
+	searchString = document.getElementById("stringSearch").value
+	searchStringSafe = Replace(searchString,"[","_")
+	searchStringSafe = Replace(searchStringSafe,"]","_")
+	searchStringSafe = Replace(searchStringSafe,"(","_")
+	searchStringSafe = Replace(searchStringSafe,")","_")
+	searchStringSafe = Replace(searchStringSafe,"|","_")
+	searchStringSafe = Replace(searchStringSafe," ","~")
+	selectedLet = GetRadioValue(document.corpus.group)
+	selectedCorpus = ReadIni("search.ini","filter",selectedLet)
 	'selectedOutput = GetRadioValue(document.outputType.out)
 	selectedType = GetRadioValue(document.searchType.type)
-	call RunScript("corpus-search.cmd",selectedType,searchString,nosp,selectedValue,"")
+	stype = "<xsl:param name='type'>" + selectedType + "</xsl:param>"
+	searchwords = "<xsl:param name='searchwords'>" + searchString + "</xsl:param>"
+	xmlString = xhead + stype + searchwords + xtail
+	Set xmlDoc = CreateObject("Msxml2.DOMDocument.3.0")
+	xmlDoc.LoadXML xmlString
+	xmlDoc.Save "param.xslt"
+	call RunScript("corpus-search.cmd",selectedCorpus,searchStringSafe,"","","")
 End Sub
 
 Sub RunScript(script,var1,var2,var3,var4,var5)

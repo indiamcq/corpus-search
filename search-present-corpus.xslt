@@ -13,13 +13,10 @@
 <xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:f="myfunctions" exclude-result-prefixes="f">
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" name="xml"/>
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" suppress-indentation="div"/>
-    <xsl:param name="type"/>
-    <xsl:param name="searchword"/>
-    <xsl:param name="nosp"/>
-    <xsl:param name="target"/>
-    <xsl:variable name="spacedsearchwords" select="translate($searchword,$nosp,' ')"/>
-    <xsl:variable name="barsearchwords" select="translate($searchword,$nosp,'|')"/>
-    <xsl:variable name="regexsearchwords" select="translate($searchword,$nosp,' ')"/>
+    <xsl:include href="param.xslt"/>
+    <xsl:variable name="spacedsearchwords" select="$searchwords"/>
+    <xsl:variable name="barsearchwords" select="translate($searchwords,' ','|')"/>
+    <xsl:variable name="regexsearchwords" select="$searchwords"/>
     <xsl:variable name="wd2find" select="tokenize($spacedsearchwords,' ')"/>
     <xsl:variable name="wd2findlc" select="tokenize(lower-case($spacedsearchwords),' ')"/>
     <xsl:variable name="wd2findcount" select="count($wd2find)"/>
@@ -30,7 +27,7 @@
         <html lang="en">
             <head>
                 <title>
-                    <xsl:value-of select="$searchword"/>
+                    <xsl:value-of select="$searchwords"/>
                 </title>
                 <meta charset='utf-8'/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -39,7 +36,7 @@
             <body>
                 <xsl:element name="h1">
                     <xsl:text>Search results for: </xsl:text>
-                    <xsl:value-of select="replace($searchword,$nosp,' ')"/>
+                    <xsl:value-of select="$searchwords"/>
                     <xsl:apply-templates select="$found/text" mode="html"/>
                 </xsl:element>
             </body>
@@ -130,15 +127,15 @@
             </xsl:element>
             <xsl:choose>
                 <xsl:when test="matches(text(),$spacedsearchwords,'i') and $type = 'phrase'">
-                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$spacedsearchwords,')'),'ซ$1ซ','i')"/>
-                    <xsl:sequence select="f:parsemarked($markedsearchwords,$spacedsearchwords,'phrase')"/>
+                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$searchwords,')'),'ยง$1ยง','i')"/>
+                    <xsl:sequence select="f:parsemarked($markedsearchwords,$searchwords,'phrase')"/>
                 </xsl:when>
                 <xsl:when test="matches(text(),$barsearchwords,'i') and $type = 'multi'">
-                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$barsearchwords,')'),'ซ$1ซ','i')"/>
+                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$barsearchwords,')'),'ยง$1ยง','i')"/>
                     <xsl:sequence select="f:parsemarked($markedsearchwords,$wd2findlc,'multi')"/>
                 </xsl:when>
                 <xsl:when test="matches(text(),$regexsearchwords) and $type = 'regex'">
-                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$regexsearchwords,')'),'ซ$1ซ')"/>
+                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$regexsearchwords,')'),'ยง$1ยง')"/>
                     <xsl:sequence select="f:parsemarked($markedsearchwords,$regexsearchwords,'regex')"/>
                 </xsl:when>
                 <xsl:otherwise>
@@ -151,38 +148,32 @@
         <xsl:param name="markedtext"/>
         <xsl:param name="match"/>
         <xsl:param name="type"/>
-        <xsl:variable name="textarray" select="tokenize($markedtext,'ซ')"/>
+        <xsl:variable name="textarray" select="tokenize($markedtext,'ยง')"/>
         <xsl:variable name="matchcount" select="count($match)"/>
         <xsl:for-each select="$textarray">
-                <xsl:choose>
+            <xsl:choose>
                 <xsl:when test="contains(lower-case(.),lower-case($match)) and $type = 'phrase'">
-                    <span>
-                            <xsl:attribute name="class">
-                            <xsl:text>hilite</xsl:text>
-                            </xsl:attribute>
-                            <xsl:value-of select="."/>
-                    </span>
-                    </xsl:when>
+                    <xsl:sequence select="f:hilite(.)"/>
+                </xsl:when>
                 <xsl:when test="lower-case(.) = $match and $type = 'multi'">
-                    <span>
-                            <xsl:attribute name="class">
-                            <xsl:text>hilite</xsl:text>
-                            </xsl:attribute>
-                            <xsl:value-of select="."/>
-                    </span>
-                    </xsl:when>
+                    <xsl:sequence select="f:hilite(.)"/>
+                </xsl:when>
                 <xsl:when test="matches(. ,$match) and $type = 'regex'">
-                <span>
-                    <xsl:attribute name="class">
-                        <xsl:text>hilite</xsl:text>
-                    </xsl:attribute>
-                        <xsl:value-of select="."/>
-                </span>
-            </xsl:when>
-            <xsl:otherwise>
+                    <xsl:sequence select="f:hilite(.)"/>
+                </xsl:when>
+                <xsl:otherwise>
                     <xsl:value-of select="."/>
-            </xsl:otherwise>
-        </xsl:choose>
-            </xsl:for-each>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+    </xsl:function>
+    <xsl:function name="f:hilite">
+        <xsl:param name="text"/>
+        <span>
+            <xsl:attribute name="class">
+                <xsl:text>hilite</xsl:text>
+            </xsl:attribute>
+            <xsl:value-of select="$text"/>
+        </span>
     </xsl:function>
 </xsl:stylesheet>

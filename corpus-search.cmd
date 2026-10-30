@@ -1,28 +1,22 @@
 @echo off
-set stype=%1
-set sstring=%2
-set nosp=%3
-set target=%4
-set output=%~5
+set target=%1
+set safestring=%~2
 echo %0
 call :main
 goto :eof
 
 :main
-  set green=[32m
-  set blue=[34m
-  set cyan=[36m
-  set reset=[0m
+  @set green=[32m
+  @set blue=[34m
+  @set cyan=[36m
+  @set reset=[0m
  
   echo %green%Search corpus:%reset% %target%
-  echo %green%Search string:%reset% %sstring%
-  echo %green%Search type:%reset% %stype% 
-  echo %green%Replace space:%reset% %nosp%
+  echo %green%Safe string:%reset% %safestring%
+  rem echo %green%Search type:%reset% %stype% 
+  rem echo %green%Replace space:%reset% %nosp%
   rem copy /y source\%target%-corpus.xml source\corpus.xml
   set source=source\%target%-corpus.xml
-  set search=tmp\search.xml
-  set info2=on
-  set safestring=%sstring:?=_%
   set htmlfile=output\%stype%-%target%-corpus-%safestring%.html
   set java=C:\programs\javafx\bin\java.exe
   set saxon=C:\programs\saxon\saxon12he.jar
@@ -32,11 +26,11 @@ goto :eof
   rem call :xslt3js
   call :searchpresent
   if exist %htmlfile% (
-  echo %green%Created: %htmlfile% %reset%
-  start %htmlfile%
+    echo %green%Created: %htmlfile% %reset%
+    start %htmlfile%
   )
   if '%errorlevel%' == '1' pause
-  timeout 60
+  timeout 20
 goto :eof
 
 :xslt3js
@@ -52,8 +46,8 @@ goto :eof
 goto :eof
 
 :searchpresent
-  rem echo %cyan%call :xslt search-present-target3.xslt %source% %htmlfile% "type=%stype% searchword='%sstring%' nosp=%nosp% target='%target%' output=%output%"%reset%
-  @call :xslt search-present-corpus.xslt %source% %htmlfile% "type=%stype% searchword='%sstring%' nosp=%nosp% target='%target%' output=%output%"
+  echo %cyan%call :xslt csearch-present-corpusorpus-search.xslt %source% %htmlfile% %reset%
+  @call :xslt search-present-corpus.xslt %source% %htmlfile% 
 goto :eof
 
 
@@ -71,8 +65,6 @@ goto :eof
   set outfile=%~3
   set params=%~4
   if not exist %infile% echo "infile not found!" & exit /b
-  if defined params set params=%params:'="%
-    @if defined info2 echo %cyan%%java% -jar "%saxon%" -o:%outfile% "%infile%" "%script%" %params%%reset%
-    %java% -Xmx1024m  %suppressXsltNamespaceCheck% -jar "%saxon%" -o:"%outfile%" "%infile%" "%script%" %params%
-  rem if exit %outfile% echo Info: Created %outfile%
+  echo %cyan%%java% -jar "%saxon%" -o:%outfile% "%infile%" "%script%" %params%%reset%
+  %java% -Xmx1024m  %suppressXsltNamespaceCheck% -jar "%saxon%" -o:"%outfile%" "%infile%" "%script%" %params%
 goto :eof

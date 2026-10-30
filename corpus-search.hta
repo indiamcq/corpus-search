@@ -13,8 +13,8 @@
             <h4 id="h4">Search Corpus</h4>
             <table>
                 <tr>
-                    <td width="40%">
-                        <form name="myGroup">
+                    <td class="col1">
+                        <form name="corpus">
                             <p>Choose Corpus to Search:</p>
                             <table>
                                 <tr>
@@ -179,15 +179,10 @@
                     <td style="padding-left:2em;">
                         <form name="searchType">
         <p>Select what type of Search:</p>
-        <input type="radio" name="type" value="phrase" checked= /> Word or phrase <br/>&#x2003;(case insensitive) search<br/>
-        <input type="radio" name="type" value="multi"/> Non-contiguous word search<br/>
+        <input type="radio" name="type" value="phrase" checked= /> Word or phrase search <br/>&#x2003;&#x2003;(case insensitive)<br/>
+        <input type="radio" name="type" value="multi"/> Non-contiguous word search<br/>&#x2003;&#x2003;(case insensitive)<br/>
         <input type="radio" name="type" value="regex"/> Regular Expression search<br/>
     </form>
-                        <form name="outputType">
-<p>Select output type:</p>
-        <input type="radio" name="out" value="table" checked= /> Table<br/>
-        <input type="radio" name="out" value="para"/> In paragraphs with tags<br/>
-</form>
                     </td>
                 </tr>
             </table>
