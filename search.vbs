@@ -14,7 +14,7 @@ tskgrp =  Array("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p",
 width = screen.availWidth
 height = screen.availHeight
 normhtproportion = 0.5
-normwdproportion = 0.28
+normwdproportion = 0.36
 htpx = height * normhtproportion
 wdpx = width * normwdproportion
 
@@ -54,9 +54,9 @@ Sub FindString()
 	searchString = Replace(document.getElementById("stringSearch").value," ",nosp)
 	selectedLet = GetRadioValue(document.myGroup.group)
 	selectedValue = ReadIni("search.ini","filter",selectedLet)
-	selectedOutput = GetRadioValue(document.outputType.out)
+	'selectedOutput = GetRadioValue(document.outputType.out)
 	selectedType = GetRadioValue(document.searchType.type)
-	call RunScript("corpus-search.cmd",selectedType,searchString,nosp,selectedValue,selectedOutput)
+	call RunScript("corpus-search.cmd",selectedType,searchString,nosp,selectedValue,"")
 End Sub
 
 Sub RunScript(script,var1,var2,var3,var4,var5)
