@@ -15,29 +15,17 @@ tskgrp =  Array("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p",
 ' Calculate pixels based on screen resolution
 width = screen.availWidth
 height = screen.availHeight
-normhtproportion = 0.5
-normwdproportion = 0.36
+normhtproportion = ReadIni("search.ini", "size","h")
+normwdproportion = ReadIni("search.ini", "size","w")
 htpx = height * normhtproportion
 wdpx = width * normwdproportion
-
-set myTitle = Document.getElementById("h4")
 ' Set the size of the window
  window.resizeTo wdpx, htpx
-' 1. Create the XML DOM object
-'Set xmlDoc = CreateObject("MSXML2.DOMDocument.6.0")
-'xmlDoc.setProperty "SelectionLanguage", "XPath"
-' 2. Load the XML file
-'If xmlDoc.Load("setup.xml") Then
-' 	set apptitle = xmlDoc.selectNodes("//setup/apptitle[1]")
-'End If
-'Set xmlDoc = Nothing
-'document.getElementById("apptitle").InnerText = apptitle
 
 Sub window_onload
 	'corpus.icon = "corpus.ico"
 	call optionShow("search.ini")
-	'set curtitle = ReadIni("search.ini", "title","h4")
-	'myTitle.InnerText = curtitle
+
 End Sub
 
 Function GetRadioValue(radioGroup)
@@ -181,5 +169,8 @@ Function optionShow(file)
         myRadio.style.display = "none"
 		myLabel.style.display = "none"
     End If
+	set myTitle = Document.getElementById("h4")
+	curtitle = ReadIni("search.ini", "title","h4")
+	myTitle.InnerText = curtitle
   Next
 End Function
