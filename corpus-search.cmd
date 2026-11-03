@@ -25,11 +25,14 @@ goto :eof
   rem end setup
   rem call :xslt3js
   call :searchpresent
-  if exist %htmlfile% (
-    echo %green%Created: %htmlfile% %reset%
-    start %htmlfile%
+  if exist chrome.exe (
+    echo %cyan%start chrome.exe "%outfile%"%reset%
+    start chrome.exe "%outfile%"
+  ) else (
+    echo %cyan%start edge.exe "%outfile%"%reset%
+    start "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "%outfile%"
   )
-  if '%errorlevel%' == '1' pause
+  if '%errorlevel%' == 1 pause
   timeout 20
 goto :eof
 
