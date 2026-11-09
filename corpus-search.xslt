@@ -32,6 +32,7 @@
                 <meta charset='utf-8'/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <link rel="stylesheet" href="../result.css"/>
+                <link rel="icon" type="image/x-icon" href="../corpus.ico"/>
             </head>
             <body>
                 <xsl:element name="h1">

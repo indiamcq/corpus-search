@@ -1,13 +1,13 @@
 
-Dim shell, dbName, objShell, nosp, java, saxon, htmlfile, source, maintab, target, width, height, htpx, wdpx, normhtproportion, normwdproportion, tskgrp, myTitle, curtitle, xhead, xtail, searchwords, stype
-
+Dim shell, dbName, objShell, ini, java, saxon, htmlfile, source, maintab, target, width, height, htpx, wdpx, normhtproportion, normwdproportion, tskgrp, myTitle, curtitle, xhead, xtail, searchwords, stype
+ini = "search.ini"
 tskgrp =  Array("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z")
- maintab = Array("main","pics","qbmag","every","files")
  Set objShell = CreateObject("Wscript.Shell")
  'nosp = "~"
  java = "javafx\bin\java.exe"
  saxon = "saxon\saxon12he.jar"
  htmlpath = "output\"
+ 
  'source = "source\all-indexes.xml"
  'tabgrp = 4
  xhead = "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='3.0'>"
@@ -15,8 +15,8 @@ tskgrp =  Array("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p",
 ' Calculate pixels based on screen resolution
 width = screen.availWidth
 height = screen.availHeight
-normhtproportion = ReadIni("search.ini", "size","h")
-normwdproportion = ReadIni("search.ini", "size","w")
+normhtproportion = ReadIni(ini, "size","h")
+normwdproportion = ReadIni(ini, "size","w")
 htpx = height * normhtproportion
 wdpx = width * normwdproportion
 ' Set the size of the window
@@ -24,7 +24,7 @@ wdpx = width * normwdproportion
 
 Sub window_onload
 	'corpus.icon = "corpus.ico"
-	call optionShow("search.ini")
+	call optionShow(ini)
 
 End Sub
 
