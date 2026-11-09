@@ -1,8 +1,12 @@
+@rem version 5
 @echo off
 set target=%1
-set safestring=%~2
-echo %0
+set safeoutfile=%~2
+set debug=%~3
+if defined debug echo on
+
 call :main
+if defined debug pause
 goto :eof
 
 :main
@@ -12,12 +16,12 @@ goto :eof
   @set reset=[0m
  
   echo %green%Search corpus:%reset% %target%
-  echo %green%Safe string:%reset% %safestring%
+  echo %green%Safe file name:%reset% %safeoutfile%
   rem echo %green%Search type:%reset% %stype% 
   rem echo %green%Replace space:%reset% %nosp%
   rem copy /y source\%target%-corpus.xml source\corpus.xml
   set source=source\%target%-corpus.xml
-  set htmlfile=output\%stype%-%target%-corpus-%safestring%.html
+  set htmlfile=output\%safeoutfile%.html
   set java=C:\programs\javafx\bin\java.exe
   set saxon=C:\programs\saxon\saxon12he.jar
   set timeout=60
@@ -50,7 +54,7 @@ goto :eof
 
 :searchpresent
   echo %cyan%call :xslt csearch-present-corpusorpus-search.xslt %source% %htmlfile% %reset%
-  @call :xslt search-present-corpus.xslt %source% %htmlfile% 
+  @call :xslt corpus-search.xslt %source% %htmlfile% 
 goto :eof
 
 

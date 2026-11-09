@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     #############################################################
-    # Name:     	present-search-corpus.xslt
+    # Name:     	corpus-search.xslt
     # Purpose:  	reformat for presentation.
     # Part of:  	Xrunner - https://github.com/indiamcq/corpus-search
     # Author:   	Ian McQuay <india.mcq@gmail.com>
@@ -13,13 +13,27 @@
 <xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:f="myfunctions" exclude-result-prefixes="f">
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" name="xml"/>
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" suppress-indentation="div"/>
-    <xsl:include href="param.xslt"/>
+    <xsl:include href="corpus-param.xslt"/>
     <xsl:variable name="spacedsearchwords" select="$searchwords"/>
-    <xsl:variable name="barsearchwords" select="translate($searchwords,' ','|')"/>
-    <xsl:variable name="regexsearchwords" select="$searchwords"/>
+    <xsl:variable name="remultisearchwords" select="concat('(',translate($searchwords,' ','|'),')')"/>
+    <!-- barsearchwords multiresearchwords-->
+    <xsl:variable name="researchwords" select="$searchwords"/>
     <xsl:variable name="wd2find" select="tokenize($spacedsearchwords,' ')"/>
     <xsl:variable name="wd2findlc" select="tokenize(lower-case($spacedsearchwords),' ')"/>
     <xsl:variable name="wd2findcount" select="count($wd2find)"/>
+    <xsl:variable name="typereport">
+        <xsl:choose>
+            <xsl:when test="$type = 'phrase'">
+                <xsl:text>Phrase/word search (case insensiive)</xsl:text>
+            </xsl:when>
+            <xsl:when test="$type = 'multi'">
+                <xsl:text>non contiguous word search (case insensiive)</xsl:text>
+            </xsl:when>
+            <xsl:when test="$type = 'regex'">
+                <xsl:text>Regular expression (case insensiive)</xsl:text>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="found">
         <xsl:apply-templates select="/*/text"/>
     </xsl:variable>
@@ -27,19 +41,29 @@
         <html lang="en">
             <head>
                 <title>
-                    <xsl:value-of select="$searchwords"/>
+                    <xsl:value-of select="concat($searchwords,' ',$target,' ',$type)"/>
                 </title>
                 <meta charset='utf-8'/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <link rel="stylesheet" href="../result.css"/>
-                <link rel="icon" type="image/x-icon" href="../corpus.ico"/>
+                <link rel="stylesheet" href="../corpus-result.css"/>
+                <link rel="icon" type="image/x-icon" href="../corpus-search.ico"/>
             </head>
             <body>
                 <xsl:element name="h1">
                     <xsl:text>Search results for: </xsl:text>
                     <xsl:value-of select="$searchwords"/>
-                    <xsl:apply-templates select="$found/text" mode="html"/>
                 </xsl:element>
+                <xsl:element name="h4">
+                    <xsl:text>Corpus searched: </xsl:text>
+                    <xsl:element name="i">
+                        <xsl:value-of select="$target"/>
+                    </xsl:element>
+                    <xsl:text>; Search type: </xsl:text>
+                    <xsl:element name="i">
+                        <xsl:value-of select="$typereport"/>
+                    </xsl:element>
+                </xsl:element>
+                <xsl:apply-templates select="$found/text" mode="html"/>
             </body>
         </html>
         <xsl:result-document href="found.xml" format="xml">
@@ -92,7 +116,7 @@
             <xsl:when test="$type = 'multi' and $wd2findcount &gt; 4">
                 <xsl:comment select="'Too many Words'"/>
             </xsl:when>
-            <xsl:when test="$type = 'regex' and matches(text(),$regexsearchwords)">
+            <xsl:when test="$type = 'regex' and matches(text(),$researchwords,'i')">
                 <xsl:copy-of select="."/>
             </xsl:when>
             <xsl:otherwise></xsl:otherwise>
@@ -127,17 +151,20 @@
                 <xsl:text>: </xsl:text>
             </xsl:element>
             <xsl:choose>
-                <xsl:when test="matches(text(),$spacedsearchwords,'i') and $type = 'phrase'">
-                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$searchwords,')'),'§$1§','i')"/>
-                    <xsl:sequence select="f:parsemarked($markedsearchwords,$searchwords,'phrase')"/>
+                <xsl:when test="$type = 'phrase'">
+                    <xsl:variable name="markedsearchwords" select="replace(text(),$researchwords,'§$1§','i')"/>
+                    <xsl:comment select="$markedsearchwords"/>
+                    <xsl:sequence select="f:parsemarked($markedsearchwords)"/>
                 </xsl:when>
-                <xsl:when test="matches(text(),$barsearchwords,'i') and $type = 'multi'">
-                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$barsearchwords,')'),'§$1§','i')"/>
-                    <xsl:sequence select="f:parsemarked($markedsearchwords,$wd2findlc,'multi')"/>
+                <xsl:when test="$type = 'multi'">
+                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$remultisearchwords,')'),'§$1§','i')"/>
+                    <xsl:comment select="$markedsearchwords"/>
+                    <xsl:sequence select="f:parsemarked($markedsearchwords)"/>
                 </xsl:when>
-                <xsl:when test="matches(text(),$regexsearchwords) and $type = 'regex'">
-                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$regexsearchwords,')'),'§$1§')"/>
-                    <xsl:sequence select="f:parsemarked($markedsearchwords,$regexsearchwords,'regex')"/>
+                <xsl:when test="$type = 'regex'">
+                    <xsl:variable name="markedsearchwords" select="replace(text(),$researchwords,'§$1§')"/>
+                    <xsl:comment select="$markedsearchwords"/>
+                    <xsl:sequence select="f:parsemarked($markedsearchwords)"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="text()"/>
@@ -147,19 +174,23 @@
     </xsl:template>
     <xsl:function name="f:parsemarked">
         <xsl:param name="markedtext"/>
-        <xsl:param name="match"/>
-        <xsl:param name="type"/>
+        <xsl:variable name="match">
+            <xsl:choose>
+                <xsl:when test="$type = 'phrase'">
+                    <xsl:value-of select="$searchwords"/>
+                </xsl:when>
+                <xsl:when test="$type = 'multi'">
+                    <xsl:value-of select="$remultisearchwords"/>
+                </xsl:when>
+                <xsl:when test="$type = 'regex'">
+                    <xsl:value-of select="$researchwords"/>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:variable>
         <xsl:variable name="textarray" select="tokenize($markedtext,'§')"/>
-        <xsl:variable name="matchcount" select="count($match)"/>
         <xsl:for-each select="$textarray">
             <xsl:choose>
-                <xsl:when test="contains(lower-case(.),lower-case($match)) and $type = 'phrase'">
-                    <xsl:sequence select="f:hilite(.)"/>
-                </xsl:when>
-                <xsl:when test="lower-case(.) = $match and $type = 'multi'">
-                    <xsl:sequence select="f:hilite(.)"/>
-                </xsl:when>
-                <xsl:when test="matches(. ,$match) and $type = 'regex'">
+                <xsl:when test="matches(. ,$match,'i')">
                     <xsl:sequence select="f:hilite(.)"/>
                 </xsl:when>
                 <xsl:otherwise>
