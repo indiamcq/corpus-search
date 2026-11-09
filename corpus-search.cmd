@@ -14,7 +14,7 @@ goto :eof
   @set blue=[34m
   @set cyan=[36m
   @set reset=[0m
- 
+  set safeoutfile=%safeoutfile:?=%
   echo %green%Search corpus:%reset% %target%
   echo %green%Safe file name:%reset% %safeoutfile%
   rem echo %green%Search type:%reset% %stype% 

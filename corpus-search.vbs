@@ -104,6 +104,8 @@ searchStringSafe = Replace(searchStringSafe,"]","_")
 searchStringSafe = Replace(searchStringSafe,"(","_")
 searchStringSafe = Replace(searchStringSafe,")","_")
 searchStringSafe = Replace(searchStringSafe,"|","_")
+searchStringSafe = Replace(searchStringSafe,"\?","_")
+searchStringSafe = Replace(searchStringSafe,"*","_")
 searchStringSafe = Replace(searchStringSafe," ","~")
 'get values from form
 selectedLet = GetRadioValue(document.myTarget.targets)

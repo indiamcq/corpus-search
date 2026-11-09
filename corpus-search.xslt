@@ -17,7 +17,7 @@
     <xsl:variable name="spacedsearchwords" select="$searchwords"/>
     <xsl:variable name="remultisearchwords" select="concat('(',translate($searchwords,' ','|'),')')"/>
     <!-- barsearchwords multiresearchwords-->
-    <xsl:variable name="researchwords" select="$searchwords"/>
+    <xsl:variable name="researchwords" select="concat('(',$searchwords,')')"/>
     <xsl:variable name="wd2find" select="tokenize($spacedsearchwords,' ')"/>
     <xsl:variable name="wd2findlc" select="tokenize(lower-case($spacedsearchwords),' ')"/>
     <xsl:variable name="wd2findcount" select="count($wd2find)"/>
@@ -157,7 +157,7 @@
                     <xsl:sequence select="f:parsemarked($markedsearchwords)"/>
                 </xsl:when>
                 <xsl:when test="$type = 'multi'">
-                    <xsl:variable name="markedsearchwords" select="replace(text(),concat('(',$remultisearchwords,')'),'§$1§','i')"/>
+                    <xsl:variable name="markedsearchwords" select="replace(text(),$remultisearchwords,'§$1§','i')"/>
                     <xsl:comment select="$markedsearchwords"/>
                     <xsl:sequence select="f:parsemarked($markedsearchwords)"/>
                 </xsl:when>
@@ -183,14 +183,14 @@
                     <xsl:value-of select="$remultisearchwords"/>
                 </xsl:when>
                 <xsl:when test="$type = 'regex'">
-                    <xsl:value-of select="$researchwords"/>
+                    <xsl:value-of select="$searchwords"/>
                 </xsl:when>
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name="textarray" select="tokenize($markedtext,'§')"/>
         <xsl:for-each select="$textarray">
             <xsl:choose>
-                <xsl:when test="matches(. ,$match,'i')">
+                <xsl:when test="matches(.,$match,'i')">
                     <xsl:sequence select="f:hilite(.)"/>
                 </xsl:when>
                 <xsl:otherwise>
