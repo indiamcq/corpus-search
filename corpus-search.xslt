@@ -14,7 +14,7 @@
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" name="xml"/>
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" suppress-indentation="div"/>
     <xsl:include href="corpus-param.xslt"/>
-     <!-- <xsl:variable name="spacedsearchwords" select="$searchwords"/> -->
+    <!-- <xsl:variable name="spacedsearchwords" select="$searchwords"/> -->
     <xsl:variable name="remultisearchwords" select="concat('(',translate($searchwords,' ','|'),')')"/>
     <!-- barsearchwords multiresearchwords-->
     <xsl:variable name="researchwords" select="concat('(',$searchwords,')')"/>
@@ -175,6 +175,7 @@
     <xsl:function name="f:parsemarked">
         <xsl:param name="markedtext"/>
         <xsl:variable name="match">
+            <xsl:text>^</xsl:text>
             <xsl:choose>
                 <xsl:when test="$type = 'phrase'">
                     <xsl:value-of select="$searchwords"/>
@@ -186,6 +187,7 @@
                     <xsl:value-of select="$searchwords"/>
                 </xsl:when>
             </xsl:choose>
+            <xsl:text>$</xsl:text>
         </xsl:variable>
         <xsl:variable name="textarray" select="tokenize($markedtext,'§')"/>
         <xsl:for-each select="$textarray">
