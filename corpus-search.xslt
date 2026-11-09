@@ -14,12 +14,12 @@
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" name="xml"/>
     <xsl:output method="xml" version="1.0" encoding="utf-8" omit-xml-declaration="no" indent="yes" suppress-indentation="div"/>
     <xsl:include href="corpus-param.xslt"/>
-    <xsl:variable name="spacedsearchwords" select="$searchwords"/>
+     <!-- <xsl:variable name="spacedsearchwords" select="$searchwords"/> -->
     <xsl:variable name="remultisearchwords" select="concat('(',translate($searchwords,' ','|'),')')"/>
     <!-- barsearchwords multiresearchwords-->
     <xsl:variable name="researchwords" select="concat('(',$searchwords,')')"/>
-    <xsl:variable name="wd2find" select="tokenize($spacedsearchwords,' ')"/>
-    <xsl:variable name="wd2findlc" select="tokenize(lower-case($spacedsearchwords),' ')"/>
+    <xsl:variable name="wd2find" select="tokenize($searchwords,' ')"/>
+    <xsl:variable name="wd2findlc" select="tokenize(lower-case($searchwords),' ')"/>
     <xsl:variable name="wd2findcount" select="count($wd2find)"/>
     <xsl:variable name="typereport">
         <xsl:choose>
@@ -88,7 +88,7 @@
         <xsl:variable name="lctext" select="lower-case(text())"/>
         <xsl:variable name="text" select="text()"/>
         <xsl:choose>
-            <xsl:when test="$type = 'phrase' and matches(.,$spacedsearchwords,'i')">
+            <xsl:when test="$type = 'phrase' and contains(lower-case(.),lower-case($searchwords))">
                 <xsl:copy-of select="."/>
             </xsl:when>
             <xsl:when test="$type = 'multi' and $wd2findcount = 1 
