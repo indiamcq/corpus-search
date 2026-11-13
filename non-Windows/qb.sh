@@ -6,6 +6,11 @@ searchword="$2"
 nosp="~"
 type="phrase"
 
+if [ $# -lt 2 ] then
+ ls source/*.xml
+ exit 1
+fi
+
 main() {
     reset='\033[0m'
     green='\033[32m'
@@ -31,10 +36,10 @@ main() {
         read -p "Press Enter to continue..."
     fi
 
-    sleep "$timeout_secs"
 }
 
 xsearchcorpus() {
+  echo -e ${blue}java -jar ../saxon/saxon-he-12.x.jar -s:source/${corpus}-corpus.xml -xsl:search-present-corpus.xslt -o:"${htmlfile}"${reset}
   java -jar ../saxon/saxon-he-12.x.jar -s:source/${corpus}-corpus.xml -xsl:search-present-corpus.xslt -o:"${htmlfile}"
 }
 
