@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/bin/zsh
 # version 2
 
 corpus="$1"
-searchword="$2"
-nosp="~"
+searchwords="$2"
 type="phrase"
+safestring=${searchwords// /}
 
-if [ $# -lt 2 ] then
+if [[ $# -lt 2 ]] then
  ls source/*.xml
  exit 1
 fi
@@ -18,29 +18,25 @@ main() {
     red='\033[31m'
 
     echo -e "${green}Search corpus: ${corpus}${reset}"
-    echo -e "${green}Search string: ${searchword}${reset}"
+    echo -e "${green}Search string: ${searchwords}${reset}"
     echo -e "${green}Search type: ${type}${reset}"
 
     safestring="${sstring//\?/_}"
-    htmlfile="$(pwd)/output/${type}-${corpus}-${safestring}.html"
+    htmlfile="$(pwd)/output/${type}-${corpus}-${searchwords// /}.html"
+    echo -e "${green}Output file: ${htmlfile}${reset}"
 
  
     mkdir -p output
     rm -f "$htmlfile"
 
     # end setup
-    searchcorpus
-
-    status=$?
-    if [[ $status -eq 1 ]]; then
-        read -p "Press Enter to continue..."
-    fi
+    xsearchcorpus
 
 }
 
 xsearchcorpus() {
-  echo -e ${blue}java -jar ../saxon/saxon-he-12.x.jar -s:source/${corpus}-corpus.xml -xsl:search-present-corpus.xslt -o:"${htmlfile}"${reset}
-  java -jar ../saxon/saxon-he-12.x.jar -s:source/${corpus}-corpus.xml -xsl:search-present-corpus.xslt -o:"${htmlfile}"
+  echo -e ${blue}java -jar ../saxon/saxon-he-12.10.jar -s:source/${corpus}-corpus.xml -xsl:corpus-search.xslt -o:"${htmlfile}" target=${corpus} searchwords="${searchwords}" ${reset}
+  java -jar ../saxon/saxon-he-12.10.jar -s:source/${corpus}-corpus.xml -xsl:corpus-search.xslt -o:"${htmlfile}" target=${corpus} searchwords="${searchwords}" type=${type}
 }
 
 searchcorpus() {
